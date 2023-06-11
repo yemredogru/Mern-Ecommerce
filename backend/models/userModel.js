@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+var validateEmail = function(email) {
+    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email)
+};
 const schema = mongoose.Schema({
     firstName:String,
     lastName:String,
@@ -31,7 +35,7 @@ const schema = mongoose.Schema({
     }
     
 })
-UserSchema.pre('save', function(next) {
+schema.pre('save', function(next) {
     var user = this;
 
     // only hash the password if it has been modified (or is new)
