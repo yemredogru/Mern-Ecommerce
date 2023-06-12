@@ -4,14 +4,15 @@ const jwt = require("jsonwebtoken");
 
 const checkUser = async(req,res,next)=>{
     const email=req.body.email,password=req.body.password
-    const user = UserModel.findOne({email:email},async function(err,user){
+    await UserModel.findOne({email:email}).then(async function(err,user){
         if(err){
             res.status(404).json({err_message:err})
         }
-        if(!user){
+        if(!user || user == undefined){
             res.status(404).json({user:'Not Found'})
         }
-        const isEqual = await bcrypt.compare(password, user.password);
+        else{
+            const isEqual = await bcrypt.compare(password, user.password);
         if(isEqual){
             var token = jwt.sign(
                 {
@@ -23,9 +24,10 @@ const checkUser = async(req,res,next)=>{
                 "secrettoken",
                 { expiresIn: "72h" }
               );
-              return { userId: user._id, token: token, tokenExpiration: 1 };
+              res.status(404).json({ userId: user._id, token: token, tokenExpiration: 1 });
         }
-        return { userId: "", token: "", tokenExpiration: 72 };
+        res.status(404).json({ userId: "", token: "", tokenExpiration: 72 });
+        }
     })
 
 }
