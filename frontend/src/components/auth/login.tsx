@@ -1,16 +1,19 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect, useContext} from 'react';
 import './login.css';
 import { Container, Row, Col, Label } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { LoginService } from '@/services/Auth/login';
+import AuthContext from '../../context/authProvider';
 
 export const Login = ()=>{
+  const {setAuth}:any = useContext(AuthContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const handleLogin=()=>{
-      LoginService(email,password).then(()=>
+      LoginService(email,password).then((res)=>
         {
+          localStorage.setItem('token',res.token);
           toast.success("Login successful")
         }
       ).catch(()=>{
